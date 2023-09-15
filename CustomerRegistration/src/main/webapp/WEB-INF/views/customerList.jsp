@@ -10,106 +10,106 @@
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <style>
-/* Additional custom CSS styles */
-.truncate-text {
-	max-width: 150px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.container {
-	padding-top: 20px;
-}
-
-.add-button {
-	position: absolute;
-	top: 20;
-	right: 0;
-	margin: 10px;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-th, td {
-	padding: 8px;
-	text-align: left;
-	border-bottom: 1px solid #ddd;
-}
-
-th {
-	background-color: #f2f2f2;
-}
-
-.action-links {
-	display: inline-block;
-	margin-right: 10px;
-	text-decoration: none;
-}
-
-.center-text {
-	text-align: center;
-}
-
-.id-text {
-	text-align: center;
-}
-/* Styles for the confirmation popup */
-.confirm-popup {
-	display: none;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	background-color: honeydew;
-	padding: 20px;
-	border-radius: 5px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	z-index: 1000;
-}
-
-.confirm-popup h2 {
-	margin-top: 0;
-	text-align: center;
-}
-
-.confirm-popup-buttons {
-	margin-top: 15px;
-	text-align: center;
-}
-
-.confirm-popup-buttons button {
-	margin: 0 10px;
-	padding: 5px 15px;
-	border: none;
-	border-radius: 3px;
-	cursor: pointer;
-}
-
-.confirm-popup-buttons .confirm {
-	background-color: #dc3545;
-	color: white;
-}
-
-.confirm-popup-buttons .cancel {
-	background-color: #28a745;
-	color: white;
-}
+	/* Additional custom CSS styles */
+	.truncate-text {
+		max-width: 150px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	.container {
+		padding-top: 20px;
+	}
+	
+	.add-button {
+		position: absolute;
+		top: 20;
+		right: 0;
+		margin: 10px;
+	}
+	
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	
+	th, td {
+		padding: 8px;
+		text-align: left;
+		border-bottom: 1px solid #ddd;
+	}
+	
+	th {
+		background-color: #f2f2f2;
+	}
+	
+	.action-links {
+		display: inline-block;
+		margin-right: 10px;
+		text-decoration: none;
+	}
+	
+	.center-text {
+		text-align: center;
+	}
+	
+	.id-text {
+		text-align: center;
+	}
+	/* Styles for the confirmation popup */
+	.confirm-popup {
+		display: none;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: honeydew;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+	}
+	
+	.confirm-popup h2 {
+		margin-top: 0;
+		text-align: center;
+	}
+	
+	.confirm-popup-buttons {
+		margin-top: 15px;
+		text-align: center;
+	}
+	
+	.confirm-popup-buttons button {
+		margin: 0 10px;
+		padding: 5px 15px;
+		border: none;
+		border-radius: 3px;
+		cursor: pointer;
+	}
+	
+	.confirm-popup-buttons .confirm {
+		background-color: #dc3545;
+		color: white;
+	}
+	
+	.confirm-popup-buttons .cancel {
+		background-color: #28a745;
+		color: white;
+	}
 </style>
 <script>
 	function confirmDelete(customerId) {
 		var popup = document.getElementById('confirmPopup');
-		var confirmBtn = document.getElementById('confirmBtn');
-		var cancelBtn = document.getElementById('cancelBtn');
+		var confirmButton = document.getElementById('confirmButton');
+		var cancelButton = document.getElementById('cancelButton');
 
 		// Show the confirmation popup
 		popup.style.display = 'block';
 
 		// Handle confirm button click
-		confirmBtn.onclick = function () {
+		confirmButton.onclick = function () {
 			// Create a form dynamically
 			var form = document.createElement('form');
 			form.method = 'post';
@@ -133,7 +133,7 @@ th {
 		};
 
 		// Handle cancel button click
-		cancelBtn.onclick = function () {
+		cancelButton.onclick = function () {
 			popup.style.display = 'none';
 		};
 	}
@@ -214,8 +214,8 @@ th {
 	<h2>Confirm Deletion</h2>
 	<p>Are you sure you want to delete this customer?</p>
 	<div class="confirm-popup-buttons">
-		<button id="confirmBtn" class="confirm">Confirm</button>
-		<button id="cancelBtn" class="cancel">Cancel</button>
+		<button id="confirmButton" class="confirm">Confirm</button>
+		<button id="cancelButton" class="cancel">Cancel</button>
 	</div>
 </div>
 </html>

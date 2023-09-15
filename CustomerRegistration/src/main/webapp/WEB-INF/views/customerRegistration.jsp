@@ -449,29 +449,30 @@
 				});
 
 				function checkEmailAvailability(email) {
-					var id = $('#id').val();
 					$.ajax({
 						url: "checkEmailAvailability",
 						type: "GET",
-						data: {
-							email: email,
-							id: id
-						},
+						data: { email: email },
 						success: function (response) {
 							if (response === "available") {
+								// Email is valid and available, clear the error message and enable the submit button
 								$('#emailError').text('');
-								$('#submit').prop('disabled');
-								validateForm();
+								$('#submit').prop('disabled', false);
 							} else {
+								// Email is not available, show the error message and disable the submit button
 								$('#emailError').text('*Email is already taken.');
 								$('#submit').prop('disabled', true);
 							}
 						},
 						error: function (xhr, textStatus, errorThrown) {
+							// An error occurred, clear the error message and disable the submit button
+							$('#emailError').text('');
+							$('#submit').prop('disabled', true);
 							console.error(errorThrown);
 						}
 					});
 				}
+
 
 				function checkMobileAvailability(mobile) {
 					$.ajax({
