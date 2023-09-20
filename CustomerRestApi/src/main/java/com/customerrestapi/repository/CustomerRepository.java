@@ -11,6 +11,12 @@ import com.customerrestapi.entites.Customer;
  */
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-	boolean existsByEmailAndIdNotOrMobileAndIdNot(String email, Long emailId, String mobile, Long mobileId);
+	boolean existsByEmailAndIdNot(String email, Long customerId);
+
+	boolean existsByMobileAndIdNot(String mobile, Long customerId);
+
+	boolean existsByMobile(String mobile);
+
+	boolean existsByEmail(String email);
 
 }

@@ -34,13 +34,15 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	@Override
 	public CustomerDto saveDetails(CustomerDto customerDto) {
-		Long emailId = customerDto.getId();
-		Long mobileId = customerDto.getId();
+		Long customerId = customerDto.getId();
 
 		// Check if email or mobile already exists for other customers
-		boolean existsEmailOrMobile = customerRepository.existsByEmailAndIdNotOrMobileAndIdNot(customerDto.getEmail(),
-				emailId, customerDto.getMobile(), mobileId);
-		if (existsEmailOrMobile) {
+		boolean existsEmail = customerId == null ? customerRepository.existsByEmail(customerDto.getEmail())
+				: customerRepository.existsByEmailAndIdNot(customerDto.getEmail(), customerId);
+		boolean existsMobile = customerId == null ? customerRepository.existsByMobile(customerDto.getMobile())
+				: customerRepository.existsByMobileAndIdNot(customerDto.getMobile(), customerId);
+
+		if (existsEmail || existsMobile) {
 			throw new EmailOrMobileAlreadyExists(MessageConstant.EMAIL_MOBILE_EXISTS_MESSAGE);
 		}
 		// Map DTO to entity and save it
@@ -67,7 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 * @param id The ID of the customer to retrieve.
 	 * @return The customer with the specified ID.
 	 * @throws ResourceNotFoundException if the customer with the specified ID is
-	 *         not found.
+	 *                                   not found.
 	 */
 	@Override
 	public Customer getCustomerById(Long id) {
@@ -80,7 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 * 
 	 * @param id The ID of the customer to delete.
 	 * @throws ResourceNotFoundException if the customer with the specified ID is
-	 *         not found.
+	 *                                   not found.
 	 */
 	@Override
 	public void deleteById(Long id) {
@@ -116,7 +118,6 @@ public class CustomerServiceImpl implements CustomerService {
 				.orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
 
 		// Update the customer's details with the information from customerDto.
-		// Here, you might want to update specific fields such as name, address, etc.
 		existingCustomer.setFirstName(customerDto.getFirstName());
 		existingCustomer.setLastName(customerDto.getLastName());
 		existingCustomer.setDateOfBirth(customerDto.getDateOfBirth());
