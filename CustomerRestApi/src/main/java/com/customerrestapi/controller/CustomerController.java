@@ -1,9 +1,8 @@
 package com.customerrestapi.controller;
 
 import java.util.List;
-
+import java.util.stream.Collectors;
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.customerrestapi.constant.MessageConstant;
 import com.customerrestapi.dto.CustomerDto;
 import com.customerrestapi.entites.Customer;
-import com.customerrestapi.exception.EmailOrMobileAlreadyExists;
-import com.customerrestapi.exception.ResourceNotFoundException;
+import com.customerrestapi.exception.CustomeException;
 import com.customerrestapi.service.CustomerService;
+import org.modelmapper.ModelMapper;
 
 /**
  * Controller class for handling customer-related operations.
@@ -33,6 +31,9 @@ import com.customerrestapi.service.CustomerService;
 public class CustomerController {
 
 	@Autowired
+	private ModelMapper modelMapper;
+
+	@Autowired
 	CustomerService customerService;
 
 	/**
@@ -42,13 +43,8 @@ public class CustomerController {
 	 * @return A message indicating the successful creation of the customer.
 	 */
 	@PostMapping("/customer")
-	public ResponseEntity<Object> create(@Valid @RequestBody CustomerDto customerDto) {
-		try {
-			customerService.saveDetails(customerDto);
-			return ResponseEntity.status(HttpStatus.CREATED).body(MessageConstant.SAVE_SUCCESS_MESSAGE);
-		} catch (EmailOrMobileAlreadyExists exception) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-		}
+	public ResponseEntity<CustomerDto> create(@Valid @RequestBody CustomerDto customerDto) throws CustomeException {
+		return ResponseEntity.status(HttpStatus.CREATED).body(customerService.saveDetails(customerDto));
 	}
 
 	/**
@@ -58,13 +54,17 @@ public class CustomerController {
 	 *         message if no records exist.
 	 */
 	@GetMapping("/customer")
-	public ResponseEntity<Object> read() {
+	public ResponseEntity<List<CustomerDto>> read() {
 		List<Customer> customerDetails = customerService.getAllCustomer();
 
-		if (customerDetails.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageConstant.RECORD_NOT_FOUND_MESSAGE);
+		if (customerDetails == null) {
+			throw new CustomeException(MessageConstant.ID_NOT_FOUND);
 		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(customerDetails);
+			// Use ModelMapper to map the list of Customer entities to CustomerDto objects
+			List<CustomerDto> customerDtos = customerDetails.stream()
+					.map(customer -> modelMapper.map(customer, CustomerDto.class)).collect(Collectors.toList());
+
+			return ResponseEntity.status(HttpStatus.OK).body(customerDtos);
 		}
 	}
 
@@ -76,13 +76,16 @@ public class CustomerController {
 	 *         message if the customer does not exist.
 	 */
 	@GetMapping("/customer/{id}")
-	public ResponseEntity<Object> getCustomerById(@PathVariable Long id) {
-		try {
-			Customer customerDetails = customerService.getCustomerById(id);
-			return ResponseEntity.status(HttpStatus.OK).body(customerDetails);
-		} catch (ResourceNotFoundException exception) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+	public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long id) {
+		Customer customerDetails = customerService.getCustomerById(id);
+
+		// Check if the customer was found
+		if (customerDetails == null) {
+			throw new CustomeException(MessageConstant.ID_NOT_FOUND);
 		}
+
+		CustomerDto customerDto = modelMapper.map(customerDetails, CustomerDto.class);
+		return ResponseEntity.status(HttpStatus.OK).body(customerDto);
 	}
 
 	/**
@@ -92,13 +95,10 @@ public class CustomerController {
 	 * @return A response indicating the success or failure of the update operation.
 	 */
 	@PutMapping("/customer")
-	public ResponseEntity<Object> update(@Valid @RequestBody CustomerDto customerDto) {
-		try {
-			customerService.updateDetails(customerDto);
-			return ResponseEntity.status(HttpStatus.OK).body(MessageConstant.UPDATE_SUCCESS_MESSAGE);
-		} catch (EmailOrMobileAlreadyExists exception) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-		}
+	public ResponseEntity<CustomerDto> update(@Valid @RequestBody CustomerDto customerDto) {
+		customerService.updateDetails(customerDto);
+
+		return ResponseEntity.status(HttpStatus.OK).body(customerDto);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class CustomerController {
 		try {
 			customerService.deleteById(id);
 			return ResponseEntity.status(HttpStatus.OK).body(MessageConstant.CUSTOMER_DELETED_MESSAGE + id);
-		} catch (ResourceNotFoundException exception) {
+		} catch (CustomeException exception) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
 		}
 	}

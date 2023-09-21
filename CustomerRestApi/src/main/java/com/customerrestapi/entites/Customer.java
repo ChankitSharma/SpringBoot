@@ -9,9 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
 import com.customerrestapi.gender.Gender;
-
 import lombok.Getter;
 import lombok.Setter;
 

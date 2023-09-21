@@ -3,16 +3,13 @@ package com.customerrestapi.service;
 import java.util.List;
 
 import javax.validation.Valid;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.customerrestapi.constant.MessageConstant;
 import com.customerrestapi.dto.CustomerDto;
 import com.customerrestapi.entites.Customer;
-import com.customerrestapi.exception.EmailOrMobileAlreadyExists;
-import com.customerrestapi.exception.ResourceNotFoundException;
+import com.customerrestapi.exception.CustomeException;
 import com.customerrestapi.repository.CustomerRepository;
 
 @Service
@@ -43,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
 				: customerRepository.existsByMobileAndIdNot(customerDto.getMobile(), customerId);
 
 		if (existsEmail || existsMobile) {
-			throw new EmailOrMobileAlreadyExists(MessageConstant.EMAIL_MOBILE_EXISTS_MESSAGE);
+			throw new CustomeException(MessageConstant.EMAIL_MOBILE_EXISTS_MESSAGE);
 		}
 		// Map DTO to entity and save it
 		Customer customer = modelMapper.map(customerDto, Customer.class);
@@ -68,26 +65,26 @@ public class CustomerServiceImpl implements CustomerService {
 	 * 
 	 * @param id The ID of the customer to retrieve.
 	 * @return The customer with the specified ID.
-	 * @throws ResourceNotFoundException if the customer with the specified ID is
+	 * @throws CustomeException if the customer with the specified ID is
 	 *                                   not found.
 	 */
 	@Override
 	public Customer getCustomerById(Long id) {
 		return customerRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(MessageConstant.ID_NOT_FOUND));
+				.orElseThrow(() -> new CustomeException(MessageConstant.ID_NOT_FOUND));
 	}
 
 	/**
 	 * Delete a customer by their ID.
 	 * 
 	 * @param id The ID of the customer to delete.
-	 * @throws ResourceNotFoundException if the customer with the specified ID is
+	 * @throws CustomeException if the customer with the specified ID is
 	 *                                   not found.
 	 */
 	@Override
 	public void deleteById(Long id) {
 		if (!customerRepository.existsById(id)) {
-			throw new ResourceNotFoundException(MessageConstant.ID_NOT_FOUND);
+			throw new CustomeException(MessageConstant.ID_NOT_FOUND);
 		}
 		customerRepository.deleteById(id);
 	}
@@ -115,7 +112,7 @@ public class CustomerServiceImpl implements CustomerService {
 		// First, check if the customer with the given ID exists in the database.
 		Long customerId = customerDto.getId();
 		Customer existingCustomer = customerRepository.findById(customerId)
-				.orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+				.orElseThrow(() -> new CustomeException("Customer not found with id: " + customerId));
 
 		// Update the customer's details with the information from customerDto.
 		existingCustomer.setFirstName(customerDto.getFirstName());
